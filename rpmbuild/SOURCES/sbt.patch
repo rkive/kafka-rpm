@@ -1,0 +1,8 @@
+--- kafka-0.8.0/sbt-old	2013-03-12 18:17:12.000000000 +0000
++++ kafka-0.8.0/sbt	2013-03-16 22:28:31.809675899 +0000
+@@ -13,4 +13,4 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
+-java -Xmx1024M -XX:MaxPermSize=512m -jar `dirname $0`/lib/sbt-launch.jar "$@"
++java -Xmx1024M -XX:MaxPermSize=512m -Dsbt.ivy.home=`dirname $0`/.ivy2/ -Divy.home=`dirname $0`/.ivy2/ -jar `dirname $0`/lib/sbt-launch.jar "$@"
