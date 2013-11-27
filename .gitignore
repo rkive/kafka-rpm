@@ -15,3 +15,9 @@
 *.exe
 *.out
 *.app
+
+# RPM Build artifacts
+rpmbuild/BUILD/
+rpmbuild/RPMS/
+rpmbuild/SOURCES/*.gz
+rpmbuild/SOURCES/*.zip

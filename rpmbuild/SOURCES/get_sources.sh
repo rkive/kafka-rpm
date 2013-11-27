@@ -5,11 +5,11 @@ echo "[*] Removing existing.."
 rm kafka-0.8.0.tar.gz tmp3212312 &>/dev/null
 mkdir tmp3212312
 cd tmp3212312
-echo "[*] Getting copy of trunk from github"
-wget -L https://github.com/apache/kafka/archive/trunk.zip -O trunk.zip
-echo "[*] Unzipping zip file"
-unzip trunk.zip
+echo "[*] Getting copy of release from dist.apache.org"
+wget -L https://dist.apache.org/repos/dist/release/kafka/kafka_2.8.0-0.8.0-beta1.tgz -O kafka_2.8.0-0.8.0-beta1.tar.gz
+echo "[*] Untaring tar file"
+tar zxf kafka_2.8.0-0.8.0-beta1.tar.gz
 echo "[*] Creating .tar.gz"
-mv kafka-trunk kafka-0.8.0
+mv kafka_2.8.0-0.8.0-beta1 kafka-0.8.0
 tar -czf ../kafka-0.8.0.tar.gz kafka-0.8.0
 cd .. && rm -rf tmp3212312

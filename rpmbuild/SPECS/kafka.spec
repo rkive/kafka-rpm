@@ -1,21 +1,22 @@
 Summary: Kafka is a distributed publish/subscribe messaging system
 Name: kafka
 Version: 0.8.0
-Release: 1
+Release: 2
 License: Apache (v2)
 Group: Applications
 Source0: kafka-%{version}.tar.gz
 Source1: kafka.init
 Source2: zookeeper.init
-Patch0: sbt.patch
-Patch1: kafka-run-class.patch
+# Patch0: sbt.patch
+# Patch1: kafka-run-class.patch
 URL: http://kafka.apache.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-Distribution: Mark Poole
-Vendor: Mark Poole
-Packager: Mark Poole <mark@poole.im>
+Distribution: New Relic
+Vendor: New Relic
+Packager: Aaron Bento <aaron@newrelic.com>
 
-Prereq: jdk >= 1.6
+# Addint jdk as an RPM prereq conflicts with our practice of not installing the jdk via RPM.
+# Prereq: jdk >= 1.6
 Requires(pre): shadow-utils
 
 %description
@@ -34,7 +35,7 @@ See our web site for more details on the project. (http://kafka.apache.org/)
 # Create user and group
 getent group kafka >/dev/null || groupadd -r kafka
 getent passwd kafka >/dev/null || \
-    useradd -r -g kafka -d /usr/local/kafka -s /bin/bash \
+    useradd -r -g kafka -d /opt/kafka -s /bin/bash \
     -c "Kafka Account" kafka
 
 
@@ -43,33 +44,35 @@ exit 0
 %post
 
 # Create symlink for install directory
-ln -s /usr/local/%{name}-%{version} /usr/local/kafka
-chown -R kafka:kafka /var/log/zookeeper /var/log/kafka /usr/local/%{name}-%{version}
+ln -s /opt/%{name}-%{version} /opt/kafka
+chown -R kafka:kafka /var/log/zookeeper /var/log/kafka /opt/%{name}-%{version}
 
 
 
 %postun
 # Remove symlinks after uninstall
-rm /usr/local/kafka
+rm /opt/kafka
 
 %prep
 
 %setup
 
-%patch0 -p1
-%patch1 -p1
+# Let's use the stock Scala 2.8.0
+# %patch0 -p1
+# %patch1 -p1
 
 %build
 # Build package
 
-./sbt update
-./sbt +package
+# We're using the pre-compiled binary for Kafka, so no need to perform builds.
+#./sbt update
+#./sbt +package
 
 %install
 pwd
-mkdir -p $RPM_BUILD_ROOT/usr/local/%{name}-%{version}
-cp -r * $RPM_BUILD_ROOT/usr/local/%{name}-%{version}
-cp -r .ivy2 $RPM_BUILD_ROOT/usr/local/%{name}-%{version}
+mkdir -p $RPM_BUILD_ROOT/opt/%{name}-%{version}
+cp -r * $RPM_BUILD_ROOT/opt/%{name}-%{version}
+#cp -r .ivy2 $RPM_BUILD_ROOT/opt/%{name}-%{version}
 mkdir -p $RPM_BUILD_ROOT/var/log/zookeeper
 mkdir -p $RPM_BUILD_ROOT/var/log/kafka
 mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
@@ -79,9 +82,9 @@ install  -m 755 %{S:2} $RPM_BUILD_ROOT/etc/rc.d/init.d/zookeeper
 %files
 %defattr(-,root,root)
 
-%config %attr(755,root,root) /usr/local/%{name}-%{version}/config
+%config %attr(755,root,root) /opt/%{name}-%{version}/config
 
-/usr/local/%{name}-%{version}
+/opt/%{name}-%{version}
 /var/log/zookeeper
 /var/log/kafka
 /etc/rc.d/init.d/kafka
@@ -92,5 +95,9 @@ install  -m 755 %{S:2} $RPM_BUILD_ROOT/etc/rc.d/init.d/zookeeper
 rm -rf %{buildroot}
 
 %changelog
+* Wed Nov 27 2013 Aaron Bento <aaron@newrelic.com>
+- Use Scala 2.8.0 based binary Kafka distribution.
+- Install into /opt
+- Remove prereq on rpm based jdk install
 * Fri Mar 15 2013 Mark Poole <mpoole@apache.org>
 - First build
